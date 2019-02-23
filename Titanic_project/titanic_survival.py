@@ -68,7 +68,7 @@ print(x_train.info())
 #  -------  Droping the Null (NaN) value rows  and 
 #          Print ' x_train.info() ' to check the how many rows our dataset have now.
 
-x_train = x_train.dropna(0)
+x_train = x_train.dropna()
 print(x_train.info())
 
 
