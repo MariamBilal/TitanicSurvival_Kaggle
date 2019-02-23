@@ -19,7 +19,7 @@ from sklearn import tree
 
 #  ---------   importing training dataset 
 
-train_dataset = pd.read_csv("E:/Kaggle projects/Titanic project/train.csv" , index_col=None, na_values=['NA'])
+train_dataset = pd.read_csv("E:/Kaggle projects/Titanic_project/train.csv" , index_col=None, na_values=['NA'])
 
 
 
@@ -49,7 +49,7 @@ embarked = pd.DataFrame(data = emb_encd , columns = ['Embarked'])
 #         we have encoded these columns and save it into a new variable 
    
 x_train = x_train.drop(labels=[ 'Sex','Embarked'], axis=1)
-print(x_train) 
+print(x_train.info()) 
 
 
 
@@ -68,7 +68,7 @@ print(x_train.info())
 #  -------  Droping the Null (NaN) value rows  and 
 #          Print ' x_train.info() ' to check the how many rows our dataset have now.
 
-x_train = x_train.dropna()
+x_train = x_train.dropna(0)
 print(x_train.info())
 
 
@@ -112,7 +112,7 @@ print(classifier)
 #  -----  we can going to do the same thing with our testing dataset 
 
 
-test_dataset = pd.read_csv("E:/Kaggle projects/Titanic project/test.csv" , index_col=None, na_values=['NA'])
+test_dataset = pd.read_csv("E:/Kaggle projects/Titanic_project/test.csv" , index_col=None )
 
 
 x_test = test_dataset.drop(labels=['Name', 'Ticket', 'Cabin'], axis=1)
@@ -124,20 +124,21 @@ emb_encd = encoder.fit_transform(x_test.Embarked.astype(str))
 
 sex = pd.DataFrame(data = Sex_encd, columns = ['Sex'])
 embarked = pd.DataFrame(data = emb_encd , columns = ['Embarked'])
-print(sex)
+
 
 
 x_test = x_test.drop(labels=[ 'Sex','Embarked'], axis=1)
-print(x_test)
+print(x_test.info())
 
 
 x_test = pd.concat([x_test , sex , embarked], axis = 1)
 print(x_test.info())
 
 
-x_test = x_test.dropna()
+#  ------  Going to fill empty rows with '0'
+
+x_test = x_test.fillna(0)
 print(x_test.info())
-print(x_test.head(20))
 
 
 
@@ -150,22 +151,28 @@ predictions = classifier.predict(x_test)
 #  ----- we need Passenger ID and Survived (predicted values) into a file So,
 #    savinging Passenger ID and Survived columns into a DataFrame
  
-passengerID = pd.DataFrame(data = x_test['PassengerId'], columns = ['PassengerId'])
+pid = x_test['PassengerId']
+passengerID = pd.DataFrame(data = pid , columns = ['PassengerId'])
 survived = pd.DataFrame(data = predictions , columns = ['Survived'])
 
 
 
 #  ----- concatinating both variables into one final DataFrame 
 test_results = pd.concat([passengerID  , survived] , axis = 1)
-test_results = test_results.dropna()
-
-print(test_results.head(20))
 
 
+print(test_results.info())
+print(test_results.head(30))
+
+
+#  ----- changing the data type from float64 to int32 before saving it into a csv file
+
+results = test_results[['PassengerId', 'Survived']].astype(int)
+print(results.info())
 
 #  ----- saving into a csv file 
 
-excle_file = test_results.to_csv("Test_Predictions.csv" , sep = ',' ,  index = False)
+excle_file = results.to_csv("Test_Predictions.csv" , sep = ',' ,  index = False)
 
 
 
